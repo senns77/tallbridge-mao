@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAO Calculator — TallBridge</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:   #0d0d0d;
+      --surf: #161616;
+      --bdr:  #252525;
+      --txt:  #e0e0e0;
+      --dim:  #888;
+      --mute: #4a4a4a;
+      --acc:  #00c97d;
+      --hot:  #f97316;
+      --sec:  #3b82f6;
+      --rur:  #6b7280;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      padding-bottom: calc(96px + env(safe-area-inset-bottom));
+    }
+
+    .wrap { max-width: 480px; margin: 0 auto; }
+
+    /* ── Inputs ─────────────────────────────────── */
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type=number] { -moz-appearance: textfield; }
+
+    input {
+      width: 100%;
+      background: var(--surf);
+      border: 1px solid var(--bdr);
+      border-radius: 5px;
+      color: var(--txt);
+      font-family: inherit;
+      font-size: 16px;
+      padding: 10px 12px;
+      outline: none;
+      -webkit-appearance: none;
+      transition: border-color .15s;
+    }
+    input:focus { border-color: var(--acc); }
+    input::placeholder { color: var(--mute); font-size: 14px; }
+
+    /* ── Layout blocks ───────────────────────────── */
+    header {
+      padding: 16px 16px 14px;
+      border-bottom: 1px solid var(--bdr);
+    }
+    header h1 { font-size: 18px; letter-spacing: .14em; color: var(--acc); }
+    header p  { font-size: 11px; color: var(--dim); margin-top: 3px; letter-spacing: .04em; }
+
+    .sec { padding: 16px; border-bottom: 1px solid var(--bdr); }
+
+    .sec-lbl {
+      font-size: 10px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 14px;
+    }
+
+    .field { margin-bottom: 12px; }
+    .field:last-child { margin-bottom: 0; }
+    .field > label {
+      display: block;
+      font-size: 11px;
+      color: var(--dim);
+      margin-bottom: 5px;
+      letter-spacing: .05em;
+    }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* ── Comp table ──────────────────────────────── */
+    .comp-head {
+      display: grid;
+      grid-template-columns: 1fr 1fr 68px;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .comp-head span {
+      font-size: 10px;
+      letter-spacing: .1em;
+      color: var(--mute);
+    }
+    .comp-head span:last-child { text-align: right; }
+
+    .comp-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 68px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .comp-row:last-of-type { margin-bottom: 0; }
+
+    .comp-psf {
+      font-size: 12px;
+      color: var(--mute);
+      text-align: right;
+      padding-right: 2px;
+      transition: color .15s;
+    }
+    .comp-psf.on { color: var(--acc); }
+
+    .avg-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      margin-top: 10px;
+      border-top: 1px solid var(--bdr);
+    }
+    .avg-bar .lbl { font-size: 10px; letter-spacing: .14em; color: var(--dim); }
+    #avg-psf { font-size: 14px; color: var(--acc); }
+
+    /* ── Pills ───────────────────────────────────── */
+    .pills { display: flex; gap: 8px; }
+
+    .pill {
+      flex: 1;
+      padding: 10px 6px 9px;
+      border: 1px solid var(--bdr);
+      border-radius: 6px;
+      background: var(--surf);
+      color: var(--dim);
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: background .15s, border-color .15s, color .15s;
+      user-select: none;
+      line-height: 1;
+    }
+    .pill b     { display: block; font-size: 13px; margin-bottom: 3px; }
+    .pill small { font-size: 10px; }
+
+    .pill.on-acc { background: rgba(0,201,125,.12); border-color: var(--acc); color: var(--acc); }
+    .pill.on-hot { background: rgba(249,115,22,.12); border-color: var(--hot); color: var(--hot); }
+    .pill.on-sec { background: rgba(59,130,246,.12); border-color: var(--sec); color: var(--sec); }
+    .pill.on-rur { background: rgba(107,114,128,.12); border-color: var(--rur); color: var(--rur); }
+
+    /* ── Auto badge ──────────────────────────────── */
+    .auto-tag {
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: rgba(0,201,125,.15);
+      color: var(--acc);
+      letter-spacing: .06em;
+      vertical-align: middle;
+      margin-left: 5px;
+    }
+
+    /* ── Breakdown card ──────────────────────────── */
+    .card {
+      background: var(--surf);
+      border-radius: 6px;
+      padding: 12px;
+    }
+
+    .bd-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--bdr);
+      gap: 8px;
+    }
+    .bd-row:last-child { border-bottom: none; }
+    .bd-row .k { color: var(--dim); font-size: 12px; flex-shrink: 0; }
+    .bd-row .v { color: var(--txt); font-size: 13px; text-align: right; }
+    .bd-row.total .k { color: var(--txt); font-size: 13px; }
+    .bd-row.total .v { color: var(--acc); font-size: 15px; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 9px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      margin-left: 5px;
+      vertical-align: middle;
+      letter-spacing: .05em;
+    }
+    .badge.hot { background: rgba(249,115,22,.2);  color: var(--hot); }
+    .badge.sec { background: rgba(59,130,246,.2);  color: var(--sec); }
+    .badge.rur { background: rgba(107,114,128,.2); color: var(--rur); }
+
+    /* ── Sticky footer ───────────────────────────── */
+    .footer {
+      position: fixed;
+      bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px;
+      background: #111;
+      border-top: 1px solid var(--bdr);
+      padding: 11px 16px calc(11px + env(safe-area-inset-bottom));
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      z-index: 50;
+    }
+    .ft-lbl { font-size: 10px; letter-spacing: .12em; color: var(--dim); margin-bottom: 3px; }
+    #ft-arv { font-size: 22px; color: var(--acc); line-height: 1; }
+    #ft-mao { font-size: 13px; color: var(--txt); line-height: 1.4; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>MAO CALC</h1>
+    <p>Maximum Allowable Offer &middot; TallBridge Real Estate</p>
+  </header>
+
+  <!-- Property ------------------------------------------------- -->
+  <div class="sec">
+    <div class="sec-lbl">Property</div>
+    <div class="field">
+      <label>Address <span style="color:var(--mute)">(optional)</span></label>
+      <input type="text" id="address" placeholder="123 Main St" autocomplete="off">
+    </div>
+    <div class="two-col">
+      <div class="field">
+        <label>City <span id="auto-tag" class="auto-tag" hidden>AUTO</span></label>
+        <input type="text" id="city" placeholder="Austin" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Subject SqFt</label>
+        <input type="number" id="sqft" placeholder="1500" inputmode="numeric" min="0">
+      </div>
+    </div>
+  </div>
+
+  <!-- Comps ---------------------------------------------------- -->
+  <div class="sec">
+    <div class="sec-lbl">Comparable Sales</div>
+    <div class="comp-head">
+      <span>SALE PRICE</span>
+      <span>SQFT</span>
+      <span style="text-align:right">$/SQFT</span>
+    </div>
+    <div id="comps"></div>
+    <div class="avg-bar">
+      <span class="lbl">AVG $/SQFT</span>
+      <span id="avg-psf">—</span>
+    </div>
+  </div>
+
+  <!-- Repair level --------------------------------------------- -->
+  <div class="sec">
+    <div class="sec-lbl">Repair Level</div>
+    <div class="pills" id="repair-pills">
+      <button class="pill on-acc" data-r="light"><b>Light</b><small>$5–10/sqft</small></button>
+      <button class="pill" data-r="medium"><b>Medium</b><small>$20–35/sqft</small></button>
+      <button class="pill" data-r="rehab"><b>Full Rehab</b><small>$40–60/sqft</small></button>
+    </div>
+  </div>
+
+  <!-- Market tier ---------------------------------------------- -->
+  <div class="sec">
+    <div class="sec-lbl">Market Tier</div>
+    <div class="pills" id="tier-pills">
+      <button class="pill" data-t="hot"><b>Hot</b><small>75% ARV</small></button>
+      <button class="pill on-sec" data-t="secondary"><b>Secondary</b><small>70% ARV</small></button>
+      <button class="pill" data-t="rural"><b>Rural</b><small>62.5% ARV</small></button>
+    </div>
+  </div>
+
+  <!-- Breakdown ------------------------------------------------- -->
+  <div class="sec">
+    <div class="sec-lbl">Breakdown</div>
+    <div class="card">
+      <div class="bd-row">
+        <span class="k">ARV</span>
+        <span class="v" id="bd-arv">—</span>
+      </div>
+      <div class="bd-row">
+        <span class="k" id="bd-pct-lbl">× 70%</span>
+        <span class="v" id="bd-arvpct">—</span>
+      </div>
+      <div class="bd-row">
+        <span class="k" id="bd-rep-lbl">− Repairs (Light)</span>
+        <span class="v" id="bd-rep">—</span>
+      </div>
+      <div class="bd-row total">
+        <span class="k">MAO Range</span>
+        <span class="v" id="bd-mao">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:4px"></div>
+
+</div><!-- /wrap -->
+
+<!-- Sticky results bar ------------------------------------------ -->
+<div class="footer">
+  <div>
+    <div class="ft-lbl">ARV</div>
+    <div id="ft-arv">$—</div>
+  </div>
+  <div>
+    <div class="ft-lbl">MAO RANGE</div>
+    <div id="ft-mao">—</div>
+  </div>
+</div>
+
+<script>
+  const HOT = new Set([
+    'austin','round rock','taylor','kyle','waco','colleen','temple',
+    'atlanta','cobb','gwinnett','fulton','marietta',
+    'houston','san antonio','dallas'
+  ]);
+
+  const REPAIRS = {
+    light:  { label: 'Light',     lo: 5,  hi: 10 },
+    medium: { label: 'Medium',    lo: 20, hi: 35 },
+    rehab:  { label: 'Full Rehab', lo: 40, hi: 60 }
+  };
+
+  const TIERS = {
+    hot:       { label: 'Hot',       cls: 'hot', pct: 0.75,  pctStr: '75%'   },
+    secondary: { label: 'Secondary', cls: 'sec', pct: 0.70,  pctStr: '70%'   },
+    rural:     { label: 'Rural',     cls: 'rur', pct: 0.625, pctStr: '62.5%' }
+  };
+
+  const TIER_CLS = { hot: 'on-hot', secondary: 'on-sec', rural: 'on-rur' };
+
+  let repair = 'light';
+  let tier   = 'secondary';
+  let manualTier = false;
+
+  // ── Build comp rows ──────────────────────────────────────────
+  const compsEl = document.getElementById('comps');
+  [0, 1, 2].forEach(i => {
+    compsEl.insertAdjacentHTML('beforeend', `
+      <div class="comp-row">
+        <input type="number" id="cp${i}" placeholder="225000" inputmode="decimal" min="0">
+        <input type="number" id="cs${i}" placeholder="1400"   inputmode="numeric" min="0">
+        <div class="comp-psf" id="psf${i}">—</div>
+      </div>`);
+    document.getElementById(`cp${i}`).addEventListener('input', calc);
+    document.getElementById(`cs${i}`).addEventListener('input', calc);
+  });
+
+  // ── Repair pills ─────────────────────────────────────────────
+  document.getElementById('repair-pills').addEventListener('click', e => {
+    const btn = e.target.closest('[data-r]');
+    if (!btn) return;
+    repair = btn.dataset.r;
+    document.querySelectorAll('[data-r]').forEach(el => {
+      el.className = 'pill' + (el.dataset.r === repair ? ' on-acc' : '');
+    });
+    calc();
+  });
+
+  // ── Tier pills ───────────────────────────────────────────────
+  document.getElementById('tier-pills').addEventListener('click', e => {
+    const btn = e.target.closest('[data-t]');
+    if (!btn) return;
+    manualTier = true;
+    document.getElementById('auto-tag').hidden = true;
+    applyTier(btn.dataset.t);
+    calc();
+  });
+
+  // ── City auto-detect ─────────────────────────────────────────
+  document.getElementById('city').addEventListener('input', function () {
+    if (manualTier) return;
+    const detected = HOT.has(this.value.trim().toLowerCase()) ? 'hot' : 'secondary';
+    applyTier(detected);
+    document.getElementById('auto-tag').hidden = !this.value.trim();
+    calc();
+  });
+
+  document.getElementById('sqft').addEventListener('input', calc);
+
+  function applyTier(t) {
+    tier = t;
+    document.querySelectorAll('[data-t]').forEach(el => {
+      el.className = 'pill' + (el.dataset.t === t ? ' ' + TIER_CLS[t] : '');
+    });
+  }
+
+  // ── Formatting ───────────────────────────────────────────────
+  function dollar(n) {
+    return '$' + Math.round(n).toLocaleString('en-US');
+  }
+
+  // ── Core calculation ─────────────────────────────────────────
+  function calc() {
+    const sqft = parseFloat(document.getElementById('sqft').value) || 0;
+
+    // Comps → $/sqft
+    const psfArr = [];
+    [0, 1, 2].forEach(i => {
+      const price = parseFloat(document.getElementById(`cp${i}`).value) || 0;
+      const csqft = parseFloat(document.getElementById(`cs${i}`).value) || 0;
+      const el    = document.getElementById(`psf${i}`);
+      if (price > 0 && csqft > 0) {
+        const v = price / csqft;
+        psfArr.push(v);
+        el.textContent = '$' + v.toFixed(2);
+        el.classList.add('on');
+      } else {
+        el.textContent = '—';
+        el.classList.remove('on');
+      }
+    });
+
+    // ARV
+    const avgEl = document.getElementById('avg-psf');
+    let arv = 0;
+    if (psfArr.length > 0 && sqft > 0) {
+      const avg = psfArr.reduce((a, b) => a + b, 0) / psfArr.length;
+      avgEl.textContent = '$' + avg.toFixed(2) + '/sqft';
+      arv = avg * sqft;
+    } else {
+      avgEl.textContent = '—';
+    }
+
+    // Repairs
+    const rep   = REPAIRS[repair];
+    const repLo = rep.lo * sqft;
+    const repHi = rep.hi * sqft;
+
+    // Tier
+    const t      = TIERS[tier];
+    const arvPct = arv * t.pct;
+    const maoLo  = Math.max(0, arvPct - repHi);
+    const maoHi  = Math.max(0, arvPct - repLo);
+
+    // Breakdown labels
+    document.getElementById('bd-pct-lbl').innerHTML =
+      `× ${t.pctStr} <span class="badge ${t.cls}">${t.label}</span>`;
+    document.getElementById('bd-rep-lbl').textContent =
+      `− Repairs (${rep.label})`;
+
+    // Update DOM
+    if (arv > 0) {
+      document.getElementById('bd-arv').textContent    = dollar(arv);
+      document.getElementById('bd-arvpct').textContent = dollar(arvPct);
+      document.getElementById('bd-rep').textContent    = `${dollar(repLo)} – ${dollar(repHi)}`;
+      document.getElementById('bd-mao').textContent    = `${dollar(maoLo)} – ${dollar(maoHi)}`;
+      document.getElementById('ft-arv').textContent    = dollar(arv);
+      document.getElementById('ft-mao').textContent    = `${dollar(maoLo)} – ${dollar(maoHi)}`;
+    } else {
+      ['bd-arv','bd-arvpct','bd-rep','bd-mao'].forEach(id => {
+        document.getElementById(id).textContent = '—';
+      });
+      document.getElementById('ft-arv').textContent = '$—';
+      document.getElementById('ft-mao').textContent = '—';
+    }
+  }
+
+  // Init
+  calc();
+</script>
+</body>
+</html>
