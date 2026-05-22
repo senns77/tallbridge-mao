@@ -30,7 +30,6 @@
 
     .wrap { max-width: 480px; margin: 0 auto; }
 
-    /* ── Inputs ─────────────────────────────────── */
     input[type=number]::-webkit-outer-spin-button,
     input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
     input[type=number] { -moz-appearance: textfield; }
@@ -50,8 +49,8 @@
     }
     input:focus { border-color: var(--acc); }
     input::placeholder { color: var(--mute); font-size: 14px; }
+    input:disabled { opacity: .3; }
 
-    /* ── Layout blocks ───────────────────────────── */
     header {
       padding: 16px 16px 14px;
       border-bottom: 1px solid var(--bdr);
@@ -81,11 +80,11 @@
 
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-    /* ── Comp table ──────────────────────────────── */
+    /* ── Comp table ──────────────────────────────────────────── */
     .comp-head {
       display: grid;
-      grid-template-columns: 1fr 1fr 68px;
-      gap: 8px;
+      grid-template-columns: 1fr 1fr 52px 58px;
+      gap: 6px;
       margin-bottom: 6px;
     }
     .comp-head span {
@@ -93,25 +92,55 @@
       letter-spacing: .1em;
       color: var(--mute);
     }
-    .comp-head span:last-child { text-align: right; }
+    .comp-head span:nth-child(3) { text-align: right; }
+    .comp-head span:nth-child(4) { text-align: center; }
 
     .comp-row {
       display: grid;
-      grid-template-columns: 1fr 1fr 68px;
-      gap: 8px;
+      grid-template-columns: 1fr 1fr 52px 58px;
+      gap: 6px;
       align-items: center;
       margin-bottom: 8px;
     }
     .comp-row:last-of-type { margin-bottom: 0; }
 
     .comp-psf {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--mute);
       text-align: right;
       padding-right: 2px;
       transition: color .15s;
     }
-    .comp-psf.on { color: var(--acc); }
+    .comp-psf.on       { color: var(--acc); }
+    .comp-psf.cash-na  { color: var(--mute); font-size: 10px; letter-spacing: .04em; }
+
+    .type-toggle {
+      padding: 0 4px;
+      height: 40px;
+      border-radius: 5px;
+      border: 1px solid var(--bdr);
+      background: var(--surf);
+      color: var(--dim);
+      font-family: inherit;
+      font-size: 9px;
+      letter-spacing: .06em;
+      cursor: pointer;
+      text-align: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: background .15s, border-color .15s, color .15s;
+      user-select: none;
+      line-height: 1.2;
+    }
+    .type-toggle.retail {
+      background: rgba(59,130,246,.12);
+      border-color: var(--sec);
+      color: var(--sec);
+    }
+    .type-toggle.cash {
+      background: rgba(249,115,22,.12);
+      border-color: var(--hot);
+      color: var(--hot);
+    }
 
     .avg-bar {
       display: flex;
@@ -122,9 +151,34 @@
       border-top: 1px solid var(--bdr);
     }
     .avg-bar .lbl { font-size: 10px; letter-spacing: .14em; color: var(--dim); }
-    #avg-psf { font-size: 14px; color: var(--acc); }
+    .avg-val { font-size: 13px; }
 
-    /* ── Pills ───────────────────────────────────── */
+    .comp-controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--bdr);
+    }
+    .comp-btn {
+      flex: 1;
+      padding: 9px;
+      border: 1px solid var(--bdr);
+      border-radius: 5px;
+      background: var(--surf);
+      color: var(--dim);
+      font-family: inherit;
+      font-size: 11px;
+      letter-spacing: .06em;
+      cursor: pointer;
+      text-align: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color .15s, color .15s;
+    }
+    .comp-btn:hover:not(:disabled) { border-color: var(--acc); color: var(--acc); }
+    .comp-btn:disabled { opacity: .3; pointer-events: none; }
+
+    /* ── Pills ───────────────────────────────────────────────── */
     .pills { display: flex; gap: 8px; }
 
     .pill {
@@ -151,7 +205,6 @@
     .pill.on-sec { background: rgba(59,130,246,.12); border-color: var(--sec); color: var(--sec); }
     .pill.on-rur { background: rgba(107,114,128,.12); border-color: var(--rur); color: var(--rur); }
 
-    /* ── Auto badge ──────────────────────────────── */
     .auto-tag {
       font-size: 9px;
       padding: 1px 5px;
@@ -163,26 +216,78 @@
       margin-left: 5px;
     }
 
-    /* ── Breakdown card ──────────────────────────── */
+    /* ── Breakdown card ──────────────────────────────────────── */
     .card {
       background: var(--surf);
       border-radius: 6px;
       padding: 12px;
     }
 
+    .bd-section-lbl {
+      font-size: 9px;
+      letter-spacing: .14em;
+      color: var(--mute);
+      text-transform: uppercase;
+      padding-bottom: 4px;
+      margin-bottom: 2px;
+    }
+
+    .bd-section + .bd-section {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--bdr);
+    }
+
     .bd-row {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      padding: 6px 0;
+      padding: 5px 0;
       border-bottom: 1px dashed var(--bdr);
       gap: 8px;
     }
     .bd-row:last-child { border-bottom: none; }
     .bd-row .k { color: var(--dim); font-size: 12px; flex-shrink: 0; }
     .bd-row .v { color: var(--txt); font-size: 13px; text-align: right; }
-    .bd-row.total .k { color: var(--txt); font-size: 13px; }
-    .bd-row.total .v { color: var(--acc); font-size: 15px; }
+
+    .bd-row.result-retail .k { color: var(--sec); font-size: 13px; }
+    .bd-row.result-retail .v { color: var(--sec); font-size: 15px; }
+    .bd-row.result-cash   .k { color: var(--hot); font-size: 13px; }
+    .bd-row.result-cash   .v { color: var(--hot); font-size: 15px; }
+
+    .empty-state {
+      text-align: center;
+      padding: 16px 0;
+      color: var(--mute);
+      font-size: 12px;
+    }
+
+    .your-offer-block {
+      margin-top: 10px;
+      padding: 16px 14px 14px;
+      border-radius: 6px;
+      background: rgba(0,201,125,.07);
+      border: 1px solid var(--acc);
+      text-align: center;
+    }
+    .your-offer-lbl {
+      font-size: 10px;
+      letter-spacing: .22em;
+      color: var(--acc);
+      margin-bottom: 8px;
+    }
+    .your-offer-val {
+      font-size: 30px;
+      color: var(--acc);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .your-offer-why {
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: .02em;
+      line-height: 1.5;
+    }
 
     .badge {
       display: inline-flex;
@@ -198,7 +303,9 @@
     .badge.sec { background: rgba(59,130,246,.2);  color: var(--sec); }
     .badge.rur { background: rgba(107,114,128,.2); color: var(--rur); }
 
-    /* ── Sticky footer ───────────────────────────── */
+    .hidden { display: none !important; }
+
+    /* ── Sticky footer ───────────────────────────────────────── */
     .footer {
       position: fixed;
       bottom: 0; left: 50%; transform: translateX(-50%);
@@ -212,8 +319,8 @@
       z-index: 50;
     }
     .ft-lbl { font-size: 10px; letter-spacing: .12em; color: var(--dim); margin-bottom: 3px; }
-    #ft-arv { font-size: 22px; color: var(--acc); line-height: 1; }
-    #ft-mao { font-size: 13px; color: var(--txt); line-height: 1.4; }
+    #ft-arv   { font-size: 22px; color: var(--acc); line-height: 1; }
+    #ft-offer { font-size: 13px; color: var(--txt); line-height: 1.4; }
   </style>
 </head>
 <body>
@@ -250,11 +357,20 @@
       <span>SALE PRICE</span>
       <span>SQFT</span>
       <span style="text-align:right">$/SQFT</span>
+      <span style="text-align:center">TYPE</span>
     </div>
     <div id="comps"></div>
-    <div class="avg-bar">
-      <span class="lbl">AVG $/SQFT</span>
-      <span id="avg-psf">—</span>
+    <div id="avg-retail-bar" class="avg-bar hidden">
+      <span class="lbl">RETAIL AVG $/SQFT</span>
+      <span id="avg-retail-psf" class="avg-val" style="color:var(--sec)">—</span>
+    </div>
+    <div id="avg-cash-bar" class="avg-bar hidden">
+      <span class="lbl">CASH AVG PRICE</span>
+      <span id="avg-cash-price" class="avg-val" style="color:var(--hot)">—</span>
+    </div>
+    <div class="comp-controls">
+      <button class="comp-btn" id="btn-remove" onclick="removeComp()" disabled>− REMOVE ROW</button>
+      <button class="comp-btn" id="btn-add" onclick="addComp()">+ ADD ROW</button>
     </div>
   </div>
 
@@ -282,22 +398,55 @@
   <div class="sec">
     <div class="sec-lbl">Breakdown</div>
     <div class="card">
-      <div class="bd-row">
-        <span class="k">ARV</span>
-        <span class="v" id="bd-arv">—</span>
+
+      <!-- empty state -->
+      <div id="empty-state" class="empty-state">Enter comp data above to calculate</div>
+
+      <!-- ARV section (retail comps) -->
+      <div id="arv-section" class="bd-section hidden">
+        <div class="bd-section-lbl">Retail Comps &rarr; ARV</div>
+        <div class="bd-row">
+          <span class="k">ARV</span>
+          <span class="v" id="bd-arv">—</span>
+        </div>
+        <div class="bd-row">
+          <span class="k" id="bd-pct-lbl">× 70%</span>
+          <span class="v" id="bd-arvpct">—</span>
+        </div>
+        <div class="bd-row">
+          <span class="k" id="bd-rep-lbl">− Repairs (Light)</span>
+          <span class="v" id="bd-rep">—</span>
+        </div>
+        <div class="bd-row result-retail">
+          <span class="k">ARV MAO</span>
+          <span class="v" id="bd-arv-mao">—</span>
+        </div>
       </div>
-      <div class="bd-row">
-        <span class="k" id="bd-pct-lbl">× 70%</span>
-        <span class="v" id="bd-arvpct">—</span>
+
+      <!-- Market Floor section (cash comps) -->
+      <div id="floor-section" class="bd-section hidden">
+        <div class="bd-section-lbl">Cash/AS-IS &rarr; Market Floor</div>
+        <div class="bd-row">
+          <span class="k">Avg Cash Price</span>
+          <span class="v" id="bd-avg-cash">—</span>
+        </div>
+        <div class="bd-row">
+          <span class="k">− Assignment Fee</span>
+          <span class="v" style="color:var(--hot)">−$15,000</span>
+        </div>
+        <div class="bd-row result-cash">
+          <span class="k">Market Floor</span>
+          <span class="v" id="bd-floor">—</span>
+        </div>
       </div>
-      <div class="bd-row">
-        <span class="k" id="bd-rep-lbl">− Repairs (Light)</span>
-        <span class="v" id="bd-rep">—</span>
-      </div>
-      <div class="bd-row total">
-        <span class="k">MAO Range</span>
-        <span class="v" id="bd-mao">—</span>
-      </div>
+
+    </div>
+
+    <!-- Your Offer -->
+    <div id="your-offer" class="your-offer-block hidden">
+      <div class="your-offer-lbl">YOUR OFFER</div>
+      <div id="offer-val" class="your-offer-val">—</div>
+      <div id="offer-why" class="your-offer-why">—</div>
     </div>
   </div>
 
@@ -305,15 +454,15 @@
 
 </div><!-- /wrap -->
 
-<!-- Sticky results bar ------------------------------------------ -->
+<!-- Sticky footer ----------------------------------------------- -->
 <div class="footer">
   <div>
     <div class="ft-lbl">ARV</div>
     <div id="ft-arv">$—</div>
   </div>
   <div>
-    <div class="ft-lbl">MAO RANGE</div>
-    <div id="ft-mao">—</div>
+    <div class="ft-lbl">YOUR OFFER</div>
+    <div id="ft-offer">—</div>
   </div>
 </div>
 
@@ -325,8 +474,8 @@
   ]);
 
   const REPAIRS = {
-    light:  { label: 'Light',     lo: 5,  hi: 10 },
-    medium: { label: 'Medium',    lo: 20, hi: 35 },
+    light:  { label: 'Light',      lo: 5,  hi: 10 },
+    medium: { label: 'Medium',     lo: 20, hi: 35 },
     rehab:  { label: 'Full Rehab', lo: 40, hi: 60 }
   };
 
@@ -342,20 +491,80 @@
   let tier   = 'secondary';
   let manualTier = false;
 
-  // ── Build comp rows ──────────────────────────────────────────
-  const compsEl = document.getElementById('comps');
-  [0, 1, 2].forEach(i => {
-    compsEl.insertAdjacentHTML('beforeend', `
-      <div class="comp-row">
-        <input type="number" id="cp${i}" placeholder="225000" inputmode="decimal" min="0">
-        <input type="number" id="cs${i}" placeholder="1400"   inputmode="numeric" min="0">
-        <div class="comp-psf" id="psf${i}">—</div>
-      </div>`);
-    document.getElementById(`cp${i}`).addEventListener('input', calc);
-    document.getElementById(`cs${i}`).addEventListener('input', calc);
-  });
+  const MAX_COMPS = 6;
+  let numComps = 3;
+  const compTypes = Array(MAX_COMPS).fill('retail');
 
-  // ── Repair pills ─────────────────────────────────────────────
+  function dollar(n) {
+    return '$' + Math.round(n).toLocaleString('en-US');
+  }
+
+  function buildRowHTML(i) {
+    const isRetail = compTypes[i] === 'retail';
+    return `
+      <div class="comp-row" id="row${i}">
+        <input type="number" id="cp${i}" placeholder="225000" inputmode="decimal" min="0" oninput="calc()">
+        <input type="number" id="cs${i}" placeholder="1400" inputmode="numeric" min="0"
+               ${isRetail ? '' : 'disabled'} oninput="calc()">
+        <div class="comp-psf${isRetail ? '' : ' cash-na'}" id="psf${i}">${isRetail ? '—' : 'N/A'}</div>
+        <button class="type-toggle ${compTypes[i]}" id="tog${i}" onclick="toggleType(${i})">
+          ${isRetail ? 'RETAIL' : 'CASH'}
+        </button>
+      </div>`;
+  }
+
+  function renderAllComps() {
+    const el = document.getElementById('comps');
+    el.innerHTML = '';
+    for (let i = 0; i < numComps; i++) {
+      el.insertAdjacentHTML('beforeend', buildRowHTML(i));
+    }
+    syncButtons();
+  }
+
+  function syncButtons() {
+    document.getElementById('btn-remove').disabled = numComps <= 1;
+    document.getElementById('btn-add').disabled    = numComps >= MAX_COMPS;
+  }
+
+  function addComp() {
+    if (numComps >= MAX_COMPS) return;
+    const el = document.getElementById('comps');
+    el.insertAdjacentHTML('beforeend', buildRowHTML(numComps));
+    numComps++;
+    syncButtons();
+  }
+
+  function removeComp() {
+    if (numComps <= 1) return;
+    numComps--;
+    document.getElementById(`row${numComps}`)?.remove();
+    syncButtons();
+    calc();
+  }
+
+  function toggleType(i) {
+    compTypes[i] = compTypes[i] === 'retail' ? 'cash' : 'retail';
+    const isRetail = compTypes[i] === 'retail';
+    const tog      = document.getElementById(`tog${i}`);
+    const sqftIn   = document.getElementById(`cs${i}`);
+    const psfEl    = document.getElementById(`psf${i}`);
+
+    tog.className   = `type-toggle ${compTypes[i]}`;
+    tog.textContent = isRetail ? 'RETAIL' : 'CASH';
+    sqftIn.disabled = !isRetail;
+
+    if (isRetail) {
+      psfEl.className = 'comp-psf';
+      psfEl.textContent = '—';
+    } else {
+      psfEl.className = 'comp-psf cash-na';
+      psfEl.textContent = 'N/A';
+    }
+    calc();
+  }
+
+  // ── Pill handlers ────────────────────────────────────────────
   document.getElementById('repair-pills').addEventListener('click', e => {
     const btn = e.target.closest('[data-r]');
     if (!btn) return;
@@ -366,7 +575,6 @@
     calc();
   });
 
-  // ── Tier pills ───────────────────────────────────────────────
   document.getElementById('tier-pills').addEventListener('click', e => {
     const btn = e.target.closest('[data-t]');
     if (!btn) return;
@@ -376,7 +584,6 @@
     calc();
   });
 
-  // ── City auto-detect ─────────────────────────────────────────
   document.getElementById('city').addEventListener('input', function () {
     if (manualTier) return;
     const detected = HOT.has(this.value.trim().toLowerCase()) ? 'hot' : 'secondary';
@@ -394,78 +601,148 @@
     });
   }
 
-  // ── Formatting ───────────────────────────────────────────────
-  function dollar(n) {
-    return '$' + Math.round(n).toLocaleString('en-US');
-  }
-
   // ── Core calculation ─────────────────────────────────────────
   function calc() {
     const sqft = parseFloat(document.getElementById('sqft').value) || 0;
 
-    // Comps → $/sqft
-    const psfArr = [];
-    [0, 1, 2].forEach(i => {
-      const price = parseFloat(document.getElementById(`cp${i}`).value) || 0;
-      const csqft = parseFloat(document.getElementById(`cs${i}`).value) || 0;
-      const el    = document.getElementById(`psf${i}`);
-      if (price > 0 && csqft > 0) {
-        const v = price / csqft;
-        psfArr.push(v);
-        el.textContent = '$' + v.toFixed(2);
-        el.classList.add('on');
-      } else {
-        el.textContent = '—';
-        el.classList.remove('on');
-      }
-    });
+    const retailPsfArr = [];
+    const cashPriceArr = [];
 
-    // ARV
-    const avgEl = document.getElementById('avg-psf');
-    let arv = 0;
-    if (psfArr.length > 0 && sqft > 0) {
-      const avg = psfArr.reduce((a, b) => a + b, 0) / psfArr.length;
-      avgEl.textContent = '$' + avg.toFixed(2) + '/sqft';
-      arv = avg * sqft;
-    } else {
-      avgEl.textContent = '—';
+    for (let i = 0; i < numComps; i++) {
+      const price = parseFloat(document.getElementById(`cp${i}`)?.value) || 0;
+      const psfEl = document.getElementById(`psf${i}`);
+      if (!psfEl) continue;
+
+      if (compTypes[i] === 'retail') {
+        const csqft = parseFloat(document.getElementById(`cs${i}`)?.value) || 0;
+        if (price > 0 && csqft > 0) {
+          const v = price / csqft;
+          retailPsfArr.push(v);
+          psfEl.textContent = '$' + v.toFixed(2);
+          psfEl.className = 'comp-psf on';
+        } else {
+          psfEl.textContent = '—';
+          psfEl.className = 'comp-psf';
+        }
+      } else {
+        if (price > 0) cashPriceArr.push(price);
+      }
     }
 
-    // Repairs
-    const rep   = REPAIRS[repair];
+    // ARV (retail comps)
+    let arv = 0, avgRetailPsf = 0;
+    const retailBar = document.getElementById('avg-retail-bar');
+    if (retailPsfArr.length > 0) {
+      avgRetailPsf = retailPsfArr.reduce((a, b) => a + b, 0) / retailPsfArr.length;
+      document.getElementById('avg-retail-psf').textContent = '$' + avgRetailPsf.toFixed(2) + '/sqft';
+      retailBar.classList.remove('hidden');
+      if (sqft > 0) arv = avgRetailPsf * sqft;
+    } else {
+      retailBar.classList.add('hidden');
+    }
+
+    // Market Floor (cash comps)
+    let marketFloor = 0, avgCash = 0;
+    const cashBar = document.getElementById('avg-cash-bar');
+    if (cashPriceArr.length > 0) {
+      avgCash = cashPriceArr.reduce((a, b) => a + b, 0) / cashPriceArr.length;
+      document.getElementById('avg-cash-price').textContent = dollar(avgCash);
+      cashBar.classList.remove('hidden');
+      marketFloor = Math.max(0, avgCash - 15000);
+    } else {
+      cashBar.classList.add('hidden');
+    }
+
+    // ARV MAO range
+    const rep = REPAIRS[repair];
+    const t   = TIERS[tier];
     const repLo = rep.lo * sqft;
     const repHi = rep.hi * sqft;
+    let arvMaoLo = 0, arvMaoHi = 0;
+    if (arv > 0) {
+      const arvPct = arv * t.pct;
+      arvMaoLo = Math.max(0, arvPct - repHi);
+      arvMaoHi = Math.max(0, arvPct - repLo);
+    }
 
-    // Tier
-    const t      = TIERS[tier];
-    const arvPct = arv * t.pct;
-    const maoLo  = Math.max(0, arvPct - repHi);
-    const maoHi  = Math.max(0, arvPct - repLo);
-
-    // Breakdown labels
+    // Update breakdown labels
     document.getElementById('bd-pct-lbl').innerHTML =
       `× ${t.pctStr} <span class="badge ${t.cls}">${t.label}</span>`;
-    document.getElementById('bd-rep-lbl').textContent =
-      `− Repairs (${rep.label})`;
+    document.getElementById('bd-rep-lbl').textContent = `− Repairs (${rep.label})`;
 
-    // Update DOM
-    if (arv > 0) {
-      document.getElementById('bd-arv').textContent    = dollar(arv);
-      document.getElementById('bd-arvpct').textContent = dollar(arvPct);
-      document.getElementById('bd-rep').textContent    = `${dollar(repLo)} – ${dollar(repHi)}`;
-      document.getElementById('bd-mao').textContent    = `${dollar(maoLo)} – ${dollar(maoHi)}`;
-      document.getElementById('ft-arv').textContent    = dollar(arv);
-      document.getElementById('ft-mao').textContent    = `${dollar(maoLo)} – ${dollar(maoHi)}`;
+    const hasArv   = arv > 0;
+    const hasFloor = marketFloor > 0;
+
+    // Empty state
+    document.getElementById('empty-state').classList.toggle('hidden', hasArv || hasFloor);
+
+    // ARV section
+    const arvSection = document.getElementById('arv-section');
+    if (hasArv) {
+      document.getElementById('bd-arv').textContent     = dollar(arv);
+      document.getElementById('bd-arvpct').textContent  = dollar(arv * t.pct);
+      document.getElementById('bd-rep').textContent     = `${dollar(repLo)} – ${dollar(repHi)}`;
+      document.getElementById('bd-arv-mao').textContent = `${dollar(arvMaoLo)} – ${dollar(arvMaoHi)}`;
+      arvSection.classList.remove('hidden');
     } else {
-      ['bd-arv','bd-arvpct','bd-rep','bd-mao'].forEach(id => {
-        document.getElementById(id).textContent = '—';
-      });
-      document.getElementById('ft-arv').textContent = '$—';
-      document.getElementById('ft-mao').textContent = '—';
+      arvSection.classList.add('hidden');
+    }
+
+    // Floor section
+    const floorSection = document.getElementById('floor-section');
+    if (hasFloor) {
+      document.getElementById('bd-avg-cash').textContent = dollar(avgCash);
+      document.getElementById('bd-floor').textContent    = dollar(marketFloor);
+      floorSection.classList.remove('hidden');
+    } else {
+      floorSection.classList.add('hidden');
+    }
+
+    // Your Offer
+    const offerEl  = document.getElementById('your-offer');
+    const offerVal = document.getElementById('offer-val');
+    const offerWhy = document.getElementById('offer-why');
+
+    if (hasArv || hasFloor) {
+      offerEl.classList.remove('hidden');
+      if (hasArv && hasFloor) {
+        // Compare market floor to upper bound of ARV MAO range
+        if (marketFloor <= arvMaoHi) {
+          offerVal.textContent = dollar(marketFloor);
+          offerWhy.textContent = 'Market Floor wins — cash comps cap your offer below ARV MAO.';
+        } else {
+          offerVal.textContent = `${dollar(arvMaoLo)} – ${dollar(arvMaoHi)}`;
+          offerWhy.textContent = 'ARV MAO wins — retail comps drive the price; cash floor is not restrictive.';
+        }
+      } else if (hasArv) {
+        offerVal.textContent = `${dollar(arvMaoLo)} – ${dollar(arvMaoHi)}`;
+        offerWhy.textContent = 'Based on retail comps only — ARV formula applied.';
+      } else {
+        offerVal.textContent = dollar(marketFloor);
+        offerWhy.textContent = 'Based on cash/AS-IS comps only — avg price minus $15K assignment fee.';
+      }
+    } else {
+      offerEl.classList.add('hidden');
+    }
+
+    // Footer
+    document.getElementById('ft-arv').textContent = hasArv ? dollar(arv) : '$—';
+    if (hasArv && hasFloor) {
+      document.getElementById('ft-offer').textContent =
+        marketFloor <= arvMaoHi
+          ? dollar(marketFloor)
+          : `${dollar(arvMaoLo)}–${dollar(arvMaoHi)}`;
+    } else if (hasArv) {
+      document.getElementById('ft-offer').textContent = `${dollar(arvMaoLo)}–${dollar(arvMaoHi)}`;
+    } else if (hasFloor) {
+      document.getElementById('ft-offer').textContent = dollar(marketFloor);
+    } else {
+      document.getElementById('ft-offer').textContent = '—';
     }
   }
 
   // Init
+  renderAllComps();
   calc();
 </script>
 </body>
