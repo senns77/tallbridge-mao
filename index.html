@@ -6,298 +6,155 @@
   <title>MAO Calculator — TallBridge</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg:   #0d0d0d;
-      --surf: #161616;
-      --bdr:  #252525;
-      --txt:  #e0e0e0;
-      --dim:  #888;
-      --mute: #4a4a4a;
-      --acc:  #00c97d;
-      --hot:  #f97316;
-      --sec:  #3b82f6;
-      --rur:  #6b7280;
+      --bg: #0d0d0d; --surf: #161616; --bdr: #252525; --txt: #e0e0e0;
+      --dim: #888; --mute: #4a4a4a; --acc: #00c97d; --hot: #f97316;
+      --sec: #3b82f6; --rur: #6b7280;
     }
-
     body {
-      background: var(--bg);
-      color: var(--txt);
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 14px;
+      background: var(--bg); color: var(--txt);
+      font-family: 'Courier New', Courier, monospace; font-size: 14px;
       padding-bottom: calc(96px + env(safe-area-inset-bottom));
     }
-
     .wrap { max-width: 480px; margin: 0 auto; }
-
     input[type=number]::-webkit-outer-spin-button,
     input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
     input[type=number] { -moz-appearance: textfield; }
-
     input {
-      width: 100%;
-      background: var(--surf);
-      border: 1px solid var(--bdr);
-      border-radius: 5px;
-      color: var(--txt);
-      font-family: inherit;
-      font-size: 16px;
-      padding: 10px 12px;
-      outline: none;
-      -webkit-appearance: none;
+      width: 100%; background: var(--surf); border: 1px solid var(--bdr);
+      border-radius: 5px; color: var(--txt); font-family: inherit; font-size: 15px;
+      padding: 9px 8px; outline: none; -webkit-appearance: none;
       transition: border-color .15s;
     }
     input:focus { border-color: var(--acc); }
-    input::placeholder { color: var(--mute); font-size: 14px; }
+    input::placeholder { color: var(--mute); font-size: 12px; }
     input:disabled { opacity: .3; }
-
-    header {
-      padding: 16px 16px 14px;
-      border-bottom: 1px solid var(--bdr);
-    }
+    header { padding: 16px 16px 14px; border-bottom: 1px solid var(--bdr); }
     header h1 { font-size: 18px; letter-spacing: .14em; color: var(--acc); }
     header p  { font-size: 11px; color: var(--dim); margin-top: 3px; letter-spacing: .04em; }
-
     .sec { padding: 16px; border-bottom: 1px solid var(--bdr); }
-
     .sec-lbl {
-      font-size: 10px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--dim);
-      margin-bottom: 14px;
+      font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 14px;
     }
-
     .field { margin-bottom: 12px; }
     .field:last-child { margin-bottom: 0; }
-    .field > label {
-      display: block;
-      font-size: 11px;
-      color: var(--dim);
-      margin-bottom: 5px;
-      letter-spacing: .05em;
-    }
-
+    .field > label { display: block; font-size: 11px; color: var(--dim); margin-bottom: 5px; letter-spacing: .05em; }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-    /* ── Comp table ──────────────────────────────────────────── */
-    .comp-head {
-      display: grid;
-      grid-template-columns: 1fr 1fr 52px 58px;
-      gap: 6px;
-      margin-bottom: 6px;
+    /* Comp header labels */
+    .comp-head-labels {
+      display: grid; gap: 6px; margin-bottom: 8px;
     }
-    .comp-head span {
-      font-size: 10px;
-      letter-spacing: .1em;
-      color: var(--mute);
+    .comp-head-labels .r1 { grid-template-columns: 1fr 1fr 54px; }
+    .comp-head-labels .r2 { grid-template-columns: 48px 48px 1fr 1fr; margin-top: 2px; }
+    .comp-head-labels span {
+      font-size: 9px; letter-spacing: .1em; color: var(--mute);
+      text-transform: uppercase;
     }
-    .comp-head span:nth-child(3) { text-align: right; }
-    .comp-head span:nth-child(4) { text-align: center; }
+    .comp-head-labels span.right { text-align: right; }
+    .comp-head-labels span.center { text-align: center; }
 
-    .comp-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 52px 58px;
-      gap: 6px;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .comp-row:last-of-type { margin-bottom: 0; }
+    /* Comp rows */
+    .comp-item { margin-bottom: 12px; }
+    .comp-item:last-child { margin-bottom: 0; }
+    .comp-num { font-size: 9px; color: var(--mute); letter-spacing: .1em; margin-bottom: 4px; }
+    .comp-line1 { display: grid; grid-template-columns: 1fr 1fr 54px; gap: 6px; margin-bottom: 5px; align-items: center; }
+    .comp-line2 { display: grid; grid-template-columns: 48px 48px 1fr 1fr; gap: 6px; align-items: center; }
+    .comp-psf { font-size: 11px; color: var(--mute); text-align: right; padding-right: 2px; transition: color .15s; }
+    .comp-psf.arv-on  { color: var(--acc); }
+    .comp-psf.asis-on { color: var(--hot); }
 
-    .comp-psf {
-      font-size: 11px;
-      color: var(--mute);
-      text-align: right;
-      padding-right: 2px;
-      transition: color .15s;
-    }
-    .comp-psf.on       { color: var(--acc); }
-    .comp-psf.cash-on  { color: var(--hot); }
-
-    .type-toggle {
-      padding: 0 4px;
-      height: 40px;
-      border-radius: 5px;
-      border: 1px solid var(--bdr);
-      background: var(--surf);
-      color: var(--dim);
-      font-family: inherit;
-      font-size: 9px;
-      letter-spacing: .06em;
-      cursor: pointer;
-      text-align: center;
+    .tog-btn {
+      height: 36px; border-radius: 5px; border: 1px solid var(--bdr);
+      background: var(--surf); color: var(--dim); font-family: inherit; font-size: 9px;
+      letter-spacing: .05em; cursor: pointer; text-align: center; width: 100%;
       -webkit-tap-highlight-color: transparent;
       transition: background .15s, border-color .15s, color .15s;
-      user-select: none;
-      line-height: 1.2;
+      user-select: none; line-height: 1.2;
     }
-    .type-toggle.retail {
-      background: rgba(59,130,246,.12);
-      border-color: var(--sec);
-      color: var(--sec);
-    }
-    .type-toggle.cash {
-      background: rgba(249,115,22,.12);
-      border-color: var(--hot);
-      color: var(--hot);
-    }
+    .tog-btn.arv    { background: rgba(0,201,125,.12);  border-color: var(--acc); color: var(--acc); }
+    .tog-btn.asis   { background: rgba(249,115,22,.12); border-color: var(--hot); color: var(--hot); }
+    .tog-btn.retail { background: rgba(59,130,246,.12); border-color: var(--sec); color: var(--sec); }
+    .tog-btn.cash   { background: rgba(249,115,22,.12); border-color: var(--hot); color: var(--hot); }
+
+    .comp-divider { border: none; border-top: 1px solid var(--bdr); margin: 10px 0; }
 
     .avg-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 12px;
-      margin-top: 10px;
-      border-top: 1px solid var(--bdr);
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 10px; margin-top: 10px; border-top: 1px solid var(--bdr);
     }
-    .avg-bar .lbl { font-size: 10px; letter-spacing: .14em; color: var(--dim); }
+    .avg-bar .lbl { font-size: 10px; letter-spacing: .12em; color: var(--dim); }
     .avg-val { font-size: 13px; }
 
-    .comp-controls {
-      display: flex;
-      gap: 8px;
-      margin-top: 14px;
-      padding-top: 12px;
-      border-top: 1px solid var(--bdr);
-    }
+    .comp-controls { display: flex; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--bdr); }
     .comp-btn {
-      flex: 1;
-      padding: 9px;
-      border: 1px solid var(--bdr);
-      border-radius: 5px;
-      background: var(--surf);
-      color: var(--dim);
-      font-family: inherit;
-      font-size: 11px;
-      letter-spacing: .06em;
-      cursor: pointer;
-      text-align: center;
+      flex: 1; padding: 9px; border: 1px solid var(--bdr); border-radius: 5px;
+      background: var(--surf); color: var(--dim); font-family: inherit; font-size: 11px;
+      letter-spacing: .06em; cursor: pointer; text-align: center;
       -webkit-tap-highlight-color: transparent;
       transition: border-color .15s, color .15s;
     }
     .comp-btn:hover:not(:disabled) { border-color: var(--acc); color: var(--acc); }
     .comp-btn:disabled { opacity: .3; pointer-events: none; }
 
-    /* ── Pills ───────────────────────────────────────────────── */
+    /* Pills */
     .pills { display: flex; gap: 8px; }
-
     .pill {
-      flex: 1;
-      padding: 10px 6px 9px;
-      border: 1px solid var(--bdr);
-      border-radius: 6px;
-      background: var(--surf);
-      color: var(--dim);
-      font-family: inherit;
-      font-size: 12px;
-      cursor: pointer;
-      text-align: center;
-      -webkit-tap-highlight-color: transparent;
+      flex: 1; padding: 10px 6px 9px; border: 1px solid var(--bdr); border-radius: 6px;
+      background: var(--surf); color: var(--dim); font-family: inherit; font-size: 12px;
+      cursor: pointer; text-align: center; -webkit-tap-highlight-color: transparent;
       transition: background .15s, border-color .15s, color .15s;
-      user-select: none;
-      line-height: 1;
+      user-select: none; line-height: 1;
     }
-    .pill b     { display: block; font-size: 13px; margin-bottom: 3px; }
+    .pill b { display: block; font-size: 13px; margin-bottom: 3px; }
     .pill small { font-size: 10px; }
-
-    .pill.on-acc { background: rgba(0,201,125,.12); border-color: var(--acc); color: var(--acc); }
+    .pill.on-acc { background: rgba(0,201,125,.12);  border-color: var(--acc); color: var(--acc); }
     .pill.on-hot { background: rgba(249,115,22,.12); border-color: var(--hot); color: var(--hot); }
     .pill.on-sec { background: rgba(59,130,246,.12); border-color: var(--sec); color: var(--sec); }
-    .pill.on-rur { background: rgba(107,114,128,.12); border-color: var(--rur); color: var(--rur); }
+    .pill.on-rur { background: rgba(107,114,128,.12);border-color: var(--rur); color: var(--rur); }
 
     .auto-tag {
-      font-size: 9px;
-      padding: 1px 5px;
-      border-radius: 3px;
-      background: rgba(0,201,125,.15);
-      color: var(--acc);
-      letter-spacing: .06em;
-      vertical-align: middle;
-      margin-left: 5px;
+      font-size: 9px; padding: 1px 5px; border-radius: 3px;
+      background: rgba(0,201,125,.15); color: var(--acc); letter-spacing: .06em;
+      vertical-align: middle; margin-left: 5px;
     }
 
-    /* ── Breakdown card ──────────────────────────────────────── */
-    .card {
-      background: var(--surf);
-      border-radius: 6px;
-      padding: 12px;
-    }
-
+    /* Breakdown */
+    .card { background: var(--surf); border-radius: 6px; padding: 12px; }
     .bd-section-lbl {
-      font-size: 9px;
-      letter-spacing: .14em;
-      color: var(--mute);
-      text-transform: uppercase;
-      padding-bottom: 4px;
-      margin-bottom: 2px;
+      font-size: 9px; letter-spacing: .14em; color: var(--mute);
+      text-transform: uppercase; padding-bottom: 4px; margin-bottom: 2px;
     }
-
-    .bd-section + .bd-section {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--bdr);
-    }
-
+    .bd-section + .bd-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--bdr); }
     .bd-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 5px 0;
-      border-bottom: 1px dashed var(--bdr);
-      gap: 8px;
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 5px 0; border-bottom: 1px dashed var(--bdr); gap: 8px;
     }
     .bd-row:last-child { border-bottom: none; }
     .bd-row .k { color: var(--dim); font-size: 12px; flex-shrink: 0; }
     .bd-row .v { color: var(--txt); font-size: 13px; text-align: right; }
+    .bd-row.result       .k { color: var(--acc); font-size: 13px; }
+    .bd-row.result       .v { color: var(--acc); font-size: 15px; }
+    .bd-row.result-floor .k { color: var(--hot); font-size: 13px; }
+    .bd-row.result-floor .v { color: var(--hot); font-size: 15px; }
+    .bd-row.adj-pos .v { color: var(--acc); }
+    .bd-row.adj-neg .v { color: var(--hot); }
 
-    .bd-row.result-retail .k { color: var(--sec); font-size: 13px; }
-    .bd-row.result-retail .v { color: var(--sec); font-size: 15px; }
-    .bd-row.result-cash   .k { color: var(--hot); font-size: 13px; }
-    .bd-row.result-cash   .v { color: var(--hot); font-size: 15px; }
-
-    .empty-state {
-      text-align: center;
-      padding: 16px 0;
-      color: var(--mute);
-      font-size: 12px;
-    }
+    .empty-state { text-align: center; padding: 16px 0; color: var(--mute); font-size: 12px; }
 
     .your-offer-block {
-      margin-top: 10px;
-      padding: 16px 14px 14px;
-      border-radius: 6px;
-      background: rgba(0,201,125,.07);
-      border: 1px solid var(--acc);
-      text-align: center;
+      margin-top: 10px; padding: 16px 14px 14px; border-radius: 6px;
+      background: rgba(0,201,125,.07); border: 1px solid var(--acc); text-align: center;
     }
-    .your-offer-lbl {
-      font-size: 10px;
-      letter-spacing: .22em;
-      color: var(--acc);
-      margin-bottom: 8px;
-    }
-    .your-offer-val {
-      font-size: 30px;
-      color: var(--acc);
-      line-height: 1;
-      margin-bottom: 10px;
-    }
-    .your-offer-why {
-      font-size: 11px;
-      color: var(--dim);
-      letter-spacing: .02em;
-      line-height: 1.5;
-    }
+    .your-offer-lbl { font-size: 10px; letter-spacing: .22em; color: var(--acc); margin-bottom: 8px; }
+    .your-offer-val { font-size: 30px; color: var(--acc); line-height: 1; margin-bottom: 10px; }
+    .your-offer-why { font-size: 11px; color: var(--dim); letter-spacing: .02em; line-height: 1.5; }
+    .comp-mix { font-size: 10px; color: var(--mute); margin-top: 6px; letter-spacing: .05em; }
 
     .badge {
-      display: inline-flex;
-      align-items: center;
-      font-size: 9px;
-      padding: 2px 5px;
-      border-radius: 3px;
-      margin-left: 5px;
-      vertical-align: middle;
-      letter-spacing: .05em;
+      display: inline-flex; align-items: center; font-size: 9px; padding: 2px 5px;
+      border-radius: 3px; margin-left: 5px; vertical-align: middle; letter-spacing: .05em;
     }
     .badge.hot { background: rgba(249,115,22,.2);  color: var(--hot); }
     .badge.sec { background: rgba(59,130,246,.2);  color: var(--sec); }
@@ -305,20 +162,15 @@
 
     .hidden { display: none !important; }
 
-    /* ── Sticky footer ───────────────────────────────────────── */
+    /* Sticky footer */
     .footer {
-      position: fixed;
-      bottom: 0; left: 50%; transform: translateX(-50%);
-      width: 100%; max-width: 480px;
-      background: #111;
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; background: #111;
       border-top: 1px solid var(--bdr);
       padding: 11px 16px calc(11px + env(safe-area-inset-bottom));
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      z-index: 50;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; z-index: 50;
     }
-    .ft-lbl { font-size: 10px; letter-spacing: .12em; color: var(--dim); margin-bottom: 3px; }
+    .ft-lbl   { font-size: 10px; letter-spacing: .12em; color: var(--dim); margin-bottom: 3px; }
     #ft-arv   { font-size: 22px; color: var(--acc); line-height: 1; }
     #ft-offer { font-size: 13px; color: var(--txt); line-height: 1.4; }
   </style>
@@ -331,7 +183,7 @@
     <p>Maximum Allowable Offer &middot; TallBridge Real Estate</p>
   </header>
 
-  <!-- Property ------------------------------------------------- -->
+  <!-- Property -->
   <div class="sec">
     <div class="sec-lbl">Property</div>
     <div class="field">
@@ -348,33 +200,19 @@
         <input type="number" id="sqft" placeholder="1500" inputmode="numeric" min="0">
       </div>
     </div>
-  </div>
-
-  <!-- Comps ---------------------------------------------------- -->
-  <div class="sec">
-    <div class="sec-lbl">Comparable Sales</div>
-    <div class="comp-head">
-      <span>SALE PRICE</span>
-      <span>SQFT</span>
-      <span style="text-align:right">$/SQFT</span>
-      <span style="text-align:center">TYPE</span>
-    </div>
-    <div id="comps"></div>
-    <div id="avg-retail-bar" class="avg-bar hidden">
-      <span class="lbl">RETAIL AVG $/SQFT</span>
-      <span id="avg-retail-psf" class="avg-val" style="color:var(--sec)">—</span>
-    </div>
-    <div id="avg-cash-bar" class="avg-bar hidden">
-      <span class="lbl">CASH AVG $/SQFT</span>
-      <span id="avg-cash-psf" class="avg-val" style="color:var(--hot)">—</span>
-    </div>
-    <div class="comp-controls">
-      <button class="comp-btn" id="btn-remove" onclick="removeComp()" disabled>− REMOVE ROW</button>
-      <button class="comp-btn" id="btn-add" onclick="addComp()">+ ADD ROW</button>
+    <div class="two-col">
+      <div class="field">
+        <label>Subject Beds</label>
+        <input type="number" id="sub-beds" placeholder="3" inputmode="numeric" min="0" max="10">
+      </div>
+      <div class="field">
+        <label>Subject Baths</label>
+        <input type="number" id="sub-baths" placeholder="2" inputmode="decimal" min="0" max="20" step="0.5">
+      </div>
     </div>
   </div>
 
-  <!-- Repair level --------------------------------------------- -->
+  <!-- Repair level -->
   <div class="sec">
     <div class="sec-lbl">Repair Level</div>
     <div class="pills" id="repair-pills">
@@ -384,7 +222,7 @@
     </div>
   </div>
 
-  <!-- Market tier ---------------------------------------------- -->
+  <!-- Market tier -->
   <div class="sec">
     <div class="sec-lbl">Market Tier</div>
     <div class="pills" id="tier-pills">
@@ -394,17 +232,51 @@
     </div>
   </div>
 
-  <!-- Breakdown ------------------------------------------------- -->
+  <!-- Comps -->
+  <div class="sec">
+    <div class="sec-lbl">Comparable Sales</div>
+
+    <!-- Column headers -->
+    <div class="comp-head-labels">
+      <div class="r1" style="display:grid; grid-template-columns:1fr 1fr 54px; gap:6px;">
+        <span>SALE PRICE</span>
+        <span>SQFT</span>
+        <span class="right">$/SQFT</span>
+      </div>
+      <div class="r2" style="display:grid; grid-template-columns:48px 48px 1fr 1fr; gap:6px; margin-top:2px;">
+        <span class="center">BDS</span>
+        <span class="center">BAS</span>
+        <span class="center">ARV/AS-IS</span>
+        <span class="center">CASH/RTL</span>
+      </div>
+    </div>
+
+    <div id="comps"></div>
+
+    <div id="avg-arv-bar" class="avg-bar hidden">
+      <span class="lbl">ARV AVG $/SQFT</span>
+      <span id="avg-arv-psf" class="avg-val" style="color:var(--acc)">—</span>
+    </div>
+    <div id="avg-asis-bar" class="avg-bar hidden">
+      <span class="lbl">AS-IS AVG $/SQFT</span>
+      <span id="avg-asis-psf" class="avg-val" style="color:var(--hot)">—</span>
+    </div>
+
+    <div class="comp-controls">
+      <button class="comp-btn" id="btn-remove" onclick="removeComp()" disabled>− REMOVE</button>
+      <button class="comp-btn" id="btn-add" onclick="addComp()">+ ADD ROW</button>
+    </div>
+  </div>
+
+  <!-- Breakdown -->
   <div class="sec">
     <div class="sec-lbl">Breakdown</div>
     <div class="card">
-
-      <!-- empty state -->
       <div id="empty-state" class="empty-state">Enter comp data above to calculate</div>
 
-      <!-- ARV section (retail comps) -->
+      <!-- ARV section -->
       <div id="arv-section" class="bd-section hidden">
-        <div class="bd-section-lbl">Retail Comps &rarr; ARV</div>
+        <div class="bd-section-lbl">ARV Comps &rarr; MAO</div>
         <div class="bd-row">
           <span class="k">ARV</span>
           <span class="v" id="bd-arv">—</span>
@@ -417,15 +289,19 @@
           <span class="k" id="bd-rep-lbl">− Repairs (Light)</span>
           <span class="v" id="bd-rep">—</span>
         </div>
-        <div class="bd-row result-retail">
+        <div class="bd-row hidden" id="arv-adj-row">
+          <span class="k">Bed/Bath Adj</span>
+          <span class="v" id="bd-arv-adj">—</span>
+        </div>
+        <div class="bd-row result">
           <span class="k">ARV MAO</span>
           <span class="v" id="bd-arv-mao">—</span>
         </div>
       </div>
 
-      <!-- Market Floor section (cash comps) -->
+      <!-- Market Floor section -->
       <div id="floor-section" class="bd-section hidden">
-        <div class="bd-section-lbl">Cash/AS-IS &rarr; Market Floor</div>
+        <div class="bd-section-lbl">AS-IS Comps &rarr; Market Floor</div>
         <div class="bd-row">
           <span class="k">AS-IS Value</span>
           <span class="v" id="bd-asis">—</span>
@@ -434,27 +310,29 @@
           <span class="k">− Assignment Fee</span>
           <span class="v" style="color:var(--hot)">−$15,000</span>
         </div>
-        <div class="bd-row result-cash">
+        <div class="bd-row hidden" id="floor-adj-row">
+          <span class="k">Bed/Bath Adj</span>
+          <span class="v" id="bd-floor-adj">—</span>
+        </div>
+        <div class="bd-row result-floor">
           <span class="k">Market Floor</span>
           <span class="v" id="bd-floor">—</span>
         </div>
       </div>
-
     </div>
 
-    <!-- Your Offer -->
     <div id="your-offer" class="your-offer-block hidden">
       <div class="your-offer-lbl">YOUR OFFER</div>
       <div id="offer-val" class="your-offer-val">—</div>
       <div id="offer-why" class="your-offer-why">—</div>
+      <div id="comp-mix" class="comp-mix"></div>
     </div>
   </div>
 
   <div style="height:4px"></div>
+</div>
 
-</div><!-- /wrap -->
-
-<!-- Sticky footer ----------------------------------------------- -->
+<!-- Sticky footer -->
 <div class="footer">
   <div>
     <div class="ft-lbl">ARV</div>
@@ -480,9 +358,9 @@
   };
 
   const TIERS = {
-    hot:       { label: 'Hot',       cls: 'hot', pct: 0.75,  pctStr: '75%'   },
-    secondary: { label: 'Secondary', cls: 'sec', pct: 0.70,  pctStr: '70%'   },
-    rural:     { label: 'Rural',     cls: 'rur', pct: 0.625, pctStr: '62.5%' }
+    hot:       { label: 'Hot',       cls: 'hot', pct: 0.75,  pctStr: '75%',   bedAdj: 8000, bathAdj: 4000 },
+    secondary: { label: 'Secondary', cls: 'sec', pct: 0.70,  pctStr: '70%',   bedAdj: 6000, bathAdj: 3000 },
+    rural:     { label: 'Rural',     cls: 'rur', pct: 0.625, pctStr: '62.5%', bedAdj: 4000, bathAdj: 2000 }
   };
 
   const TIER_CLS = { hot: 'on-hot', secondary: 'on-sec', rural: 'on-rur' };
@@ -490,34 +368,50 @@
   let repair = 'light';
   let tier   = 'secondary';
   let manualTier = false;
-
   const MAX_COMPS = 6;
   let numComps = 3;
-  const compTypes = Array(MAX_COMPS).fill('retail');
+  const compValType  = Array(MAX_COMPS).fill('arv');    // arv | asis
+  const compSaleType = Array(MAX_COMPS).fill('retail'); // retail | cash
 
   function dollar(n) {
     return '$' + Math.round(n).toLocaleString('en-US');
   }
 
+  function signedDollar(n) {
+    const abs = '$' + Math.abs(Math.round(n)).toLocaleString('en-US');
+    return n >= 0 ? '+' + abs : '−' + abs;
+  }
+
+  function numVal(id) {
+    const v = document.getElementById(id)?.value;
+    return (v !== '' && v != null) ? parseFloat(v) : null;
+  }
+
   function buildRowHTML(i) {
-    const isRetail = compTypes[i] === 'retail';
+    const vt = compValType[i];
+    const st = compSaleType[i];
     return `
-      <div class="comp-row" id="row${i}">
-        <input type="number" id="cp${i}" placeholder="225000" inputmode="decimal" min="0" oninput="calc()">
-        <input type="number" id="cs${i}" placeholder="1400" inputmode="numeric" min="0" oninput="calc()">
-        <div class="comp-psf" id="psf${i}">—</div>
-        <button class="type-toggle ${compTypes[i]}" id="tog${i}" onclick="toggleType(${i})">
-          ${isRetail ? 'RETAIL' : 'CASH'}
-        </button>
-      </div>`;
+      <div class="comp-item" id="row${i}">
+        <div class="comp-num">COMP ${i + 1}</div>
+        <div class="comp-line1">
+          <input type="number" id="cp${i}" placeholder="225000" inputmode="decimal" min="0" oninput="calc()">
+          <input type="number" id="cs${i}" placeholder="1400"   inputmode="numeric" min="0" oninput="calc()">
+          <div class="comp-psf" id="psf${i}">—</div>
+        </div>
+        <div class="comp-line2">
+          <input type="number" id="cb${i}"  placeholder="3" inputmode="numeric" min="0" max="10" oninput="calc()">
+          <input type="number" id="cba${i}" placeholder="2" inputmode="decimal" min="0" max="20" step="0.5" oninput="calc()">
+          <button class="tog-btn ${vt}"  id="vtog${i}" onclick="toggleValType(${i})">${vt === 'arv' ? 'ARV' : 'AS-IS'}</button>
+          <button class="tog-btn ${st}" id="stog${i}" onclick="toggleSaleType(${i})">${st === 'retail' ? 'RETAIL' : 'CASH'}</button>
+        </div>
+      </div>
+      ${i < numComps - 1 ? '<hr class="comp-divider">' : ''}`;
   }
 
   function renderAllComps() {
     const el = document.getElementById('comps');
     el.innerHTML = '';
-    for (let i = 0; i < numComps; i++) {
-      el.insertAdjacentHTML('beforeend', buildRowHTML(i));
-    }
+    for (let i = 0; i < numComps; i++) el.insertAdjacentHTML('beforeend', buildRowHTML(i));
     syncButtons();
   }
 
@@ -529,7 +423,11 @@
   function addComp() {
     if (numComps >= MAX_COMPS) return;
     const el = document.getElementById('comps');
-    el.insertAdjacentHTML('beforeend', buildRowHTML(numComps));
+    if (numComps > 0) el.insertAdjacentHTML('beforeend', '<hr class="comp-divider">');
+    const tmp = document.createElement('div');
+    tmp.innerHTML = buildRowHTML(numComps).trim();
+    // buildRowHTML appends a divider at end; remove it for last row
+    el.appendChild(tmp.firstElementChild);
     numComps++;
     syncButtons();
   }
@@ -538,24 +436,33 @@
     if (numComps <= 1) return;
     numComps--;
     document.getElementById(`row${numComps}`)?.remove();
+    // remove trailing divider if any
+    const compsEl = document.getElementById('comps');
+    const last = compsEl.lastElementChild;
+    if (last && last.tagName === 'HR') last.remove();
     syncButtons();
     calc();
   }
 
-  function toggleType(i) {
-    compTypes[i] = compTypes[i] === 'retail' ? 'cash' : 'retail';
-    const isRetail = compTypes[i] === 'retail';
-    const tog   = document.getElementById(`tog${i}`);
+  function toggleValType(i) {
+    compValType[i] = compValType[i] === 'arv' ? 'asis' : 'arv';
+    const btn = document.getElementById(`vtog${i}`);
+    btn.className   = `tog-btn ${compValType[i]}`;
+    btn.textContent = compValType[i] === 'arv' ? 'ARV' : 'AS-IS';
     const psfEl = document.getElementById(`psf${i}`);
-
-    tog.className   = `type-toggle ${compTypes[i]}`;
-    tog.textContent = isRetail ? 'RETAIL' : 'CASH';
-    psfEl.className = 'comp-psf';
+    psfEl.className   = 'comp-psf';
     psfEl.textContent = '—';
     calc();
   }
 
-  // ── Pill handlers ────────────────────────────────────────────
+  function toggleSaleType(i) {
+    compSaleType[i] = compSaleType[i] === 'retail' ? 'cash' : 'retail';
+    const btn = document.getElementById(`stog${i}`);
+    btn.className   = `tog-btn ${compSaleType[i]}`;
+    btn.textContent = compSaleType[i] === 'retail' ? 'RETAIL' : 'CASH';
+    calc();
+  }
+
   document.getElementById('repair-pills').addEventListener('click', e => {
     const btn = e.target.closest('[data-r]');
     if (!btn) return;
@@ -583,7 +490,9 @@
     calc();
   });
 
-  document.getElementById('sqft').addEventListener('input', calc);
+  ['sqft', 'sub-beds', 'sub-baths'].forEach(id =>
+    document.getElementById(id).addEventListener('input', calc)
+  );
 
   function applyTier(t) {
     tier = t;
@@ -592,89 +501,126 @@
     });
   }
 
-  // ── Core calculation ─────────────────────────────────────────
   function calc() {
-    const sqft = parseFloat(document.getElementById('sqft').value) || 0;
+    const sqft     = numVal('sqft')      || 0;
+    const subBeds  = numVal('sub-beds');
+    const subBaths = numVal('sub-baths');
+    const hasSub   = subBeds !== null && subBaths !== null;
 
-    const retailPsfArr = [];
-    const cashPsfArr   = [];
+    const t   = TIERS[tier];
+    const rep = REPAIRS[repair];
+
+    const arvPsfArr  = [];
+    const asisPsfArr = [];
+    let arvAdjSum = 0,  arvAdjCount = 0;
+    let asisAdjSum = 0, asisAdjCount = 0;
+    let retailCount = 0, cashCount = 0;
 
     for (let i = 0; i < numComps; i++) {
-      const price = parseFloat(document.getElementById(`cp${i}`)?.value) || 0;
-      const csqft = parseFloat(document.getElementById(`cs${i}`)?.value) || 0;
-      const psfEl = document.getElementById(`psf${i}`);
+      const price  = numVal(`cp${i}`)  || 0;
+      const csqft  = numVal(`cs${i}`)  || 0;
+      const cBeds  = numVal(`cb${i}`);
+      const cBaths = numVal(`cba${i}`);
+      const psfEl  = document.getElementById(`psf${i}`);
       if (!psfEl) continue;
 
       if (price > 0 && csqft > 0) {
-        const v = price / csqft;
-        psfEl.textContent = '$' + v.toFixed(2);
-        if (compTypes[i] === 'retail') {
-          retailPsfArr.push(v);
-          psfEl.className = 'comp-psf on';
+        const psf = price / csqft;
+        psfEl.textContent = '$' + psf.toFixed(2);
+
+        if (compSaleType[i] === 'retail') retailCount++; else cashCount++;
+
+        if (compValType[i] === 'arv') {
+          arvPsfArr.push(psf);
+          psfEl.className = 'comp-psf arv-on';
+          if (hasSub && cBeds !== null && cBaths !== null) {
+            arvAdjSum += (subBeds - cBeds) * t.bedAdj + (subBaths - cBaths) * t.bathAdj;
+            arvAdjCount++;
+          }
         } else {
-          cashPsfArr.push(v);
-          psfEl.className = 'comp-psf cash-on';
+          asisPsfArr.push(psf);
+          psfEl.className = 'comp-psf asis-on';
+          if (hasSub && cBeds !== null && cBaths !== null) {
+            asisAdjSum += (subBeds - cBeds) * t.bedAdj + (subBaths - cBaths) * t.bathAdj;
+            asisAdjCount++;
+          }
         }
       } else {
         psfEl.textContent = '—';
-        psfEl.className = 'comp-psf';
+        psfEl.className   = 'comp-psf';
       }
     }
 
-    // ARV (retail comps)
-    let arv = 0, avgRetailPsf = 0;
-    const retailBar = document.getElementById('avg-retail-bar');
-    if (retailPsfArr.length > 0) {
-      avgRetailPsf = retailPsfArr.reduce((a, b) => a + b, 0) / retailPsfArr.length;
-      document.getElementById('avg-retail-psf').textContent = '$' + avgRetailPsf.toFixed(2) + '/sqft';
-      retailBar.classList.remove('hidden');
-      if (sqft > 0) arv = avgRetailPsf * sqft;
+    // ARV from ARV comps
+    let arv = 0;
+    const arvBar = document.getElementById('avg-arv-bar');
+    if (arvPsfArr.length > 0) {
+      const avgPsf = arvPsfArr.reduce((a, b) => a + b, 0) / arvPsfArr.length;
+      document.getElementById('avg-arv-psf').textContent = '$' + avgPsf.toFixed(2) + '/sqft';
+      arvBar.classList.remove('hidden');
+      if (sqft > 0) arv = avgPsf * sqft;
     } else {
-      retailBar.classList.add('hidden');
+      arvBar.classList.add('hidden');
     }
 
-    // Market Floor (cash/AS-IS comps via $/sqft)
-    let marketFloor = 0, asisValue = 0, avgCashPsf = 0;
-    const cashBar = document.getElementById('avg-cash-bar');
-    if (cashPsfArr.length > 0 && sqft > 0) {
-      avgCashPsf = cashPsfArr.reduce((a, b) => a + b, 0) / cashPsfArr.length;
-      asisValue  = avgCashPsf * sqft;
-      document.getElementById('avg-cash-psf').textContent = '$' + avgCashPsf.toFixed(2) + '/sqft';
-      cashBar.classList.remove('hidden');
-      marketFloor = Math.max(0, asisValue - 15000);
+    // AS-IS Value from AS-IS comps
+    let asisValue = 0;
+    const asisBar = document.getElementById('avg-asis-bar');
+    if (asisPsfArr.length > 0) {
+      const avgPsf = asisPsfArr.reduce((a, b) => a + b, 0) / asisPsfArr.length;
+      document.getElementById('avg-asis-psf').textContent = '$' + avgPsf.toFixed(2) + '/sqft';
+      asisBar.classList.remove('hidden');
+      if (sqft > 0) asisValue = avgPsf * sqft;
     } else {
-      cashBar.classList.add('hidden');
+      asisBar.classList.add('hidden');
     }
 
-    // ARV MAO range
-    const rep = REPAIRS[repair];
-    const t   = TIERS[tier];
+    // Avg bed/bath adjustments
+    const avgArvAdj  = arvAdjCount  > 0 ? arvAdjSum  / arvAdjCount  : 0;
+    const avgAsisAdj = asisAdjCount > 0 ? asisAdjSum / asisAdjCount : 0;
+
+    // ARV MAO (tier % applied, repairs subtracted, bed/bath adj added)
     const repLo = rep.lo * sqft;
     const repHi = rep.hi * sqft;
     let arvMaoLo = 0, arvMaoHi = 0;
     if (arv > 0) {
       const arvPct = arv * t.pct;
-      arvMaoLo = Math.max(0, arvPct - repHi);
-      arvMaoHi = Math.max(0, arvPct - repLo);
+      arvMaoLo = Math.max(0, arvPct - repHi + avgArvAdj);
+      arvMaoHi = Math.max(0, arvPct - repLo + avgArvAdj);
     }
+
+    // Market Floor (no tier % applied — AS-IS value minus assignment fee plus bed/bath adj)
+    let marketFloor = 0;
+    if (asisValue > 0) {
+      marketFloor = Math.max(0, asisValue - 15000 + avgAsisAdj);
+    }
+
+    const hasArv   = arv > 0;
+    const hasFloor = marketFloor > 0;
+
+    document.getElementById('empty-state').classList.toggle('hidden', hasArv || hasFloor);
 
     // Update breakdown labels
     document.getElementById('bd-pct-lbl').innerHTML =
       `× ${t.pctStr} <span class="badge ${t.cls}">${t.label}</span>`;
     document.getElementById('bd-rep-lbl').textContent = `− Repairs (${rep.label})`;
 
-    const hasArv   = arv > 0;
-    const hasFloor = marketFloor > 0;
-
-    // Empty state
-    document.getElementById('empty-state').classList.toggle('hidden', hasArv || hasFloor);
-
     // ARV section
     const arvSection = document.getElementById('arv-section');
     if (hasArv) {
-      document.getElementById('bd-arv').textContent     = dollar(arv);
-      document.getElementById('bd-arvpct').textContent  = dollar(arv * t.pct);
-      document.getElementById('bd-rep').textContent     = `${dollar(repLo)} – ${dollar(repHi)}`;
+      document.getElementById('bd-arv').textContent    = dollar(arv);
+      document.getElementById('bd-arvpct').textContent = dollar(arv * t.pct);
+      document.getElementById('bd-rep').textContent    = `${dollar(repLo)} – ${dollar(repHi)}`;
+
+      const adjRow = document.getElementById('arv-adj-row');
+      const adjEl  = document.getElementById('bd-arv-adj');
+      if (arvAdjCount > 0) {
+        adjEl.textContent = signedDollar(avgArvAdj);
+        adjRow.className  = 'bd-row ' + (avgArvAdj >= 0 ? 'adj-pos' : 'adj-neg');
+      } else {
+        adjRow.className = 'bd-row hidden';
+      }
+
       document.getElementById('bd-arv-mao').textContent = `${dollar(arvMaoLo)} – ${dollar(arvMaoHi)}`;
       arvSection.classList.remove('hidden');
     } else {
@@ -683,15 +629,25 @@
 
     // Floor section
     const floorSection = document.getElementById('floor-section');
-    if (hasFloor) {
-      document.getElementById('bd-asis').textContent  = dollar(asisValue);
+    if (asisValue > 0) {
+      document.getElementById('bd-asis').textContent = dollar(asisValue);
+
+      const adjRow = document.getElementById('floor-adj-row');
+      const adjEl  = document.getElementById('bd-floor-adj');
+      if (asisAdjCount > 0) {
+        adjEl.textContent = signedDollar(avgAsisAdj);
+        adjRow.className  = 'bd-row ' + (avgAsisAdj >= 0 ? 'adj-pos' : 'adj-neg');
+      } else {
+        adjRow.className = 'bd-row hidden';
+      }
+
       document.getElementById('bd-floor').textContent = dollar(marketFloor);
       floorSection.classList.remove('hidden');
     } else {
       floorSection.classList.add('hidden');
     }
 
-    // Your Offer
+    // Your Offer — lower of ARV MAO (hi) vs Market Floor
     const offerEl  = document.getElementById('your-offer');
     const offerVal = document.getElementById('offer-val');
     const offerWhy = document.getElementById('offer-why');
@@ -699,20 +655,31 @@
     if (hasArv || hasFloor) {
       offerEl.classList.remove('hidden');
       if (hasArv && hasFloor) {
-        // Compare market floor to upper bound of ARV MAO range
         if (marketFloor <= arvMaoHi) {
           offerVal.textContent = dollar(marketFloor);
-          offerWhy.textContent = 'Market Floor wins — cash comps cap your offer below ARV MAO.';
+          offerWhy.textContent = 'Market Floor is lower — AS-IS comps cap your offer.';
         } else {
           offerVal.textContent = `${dollar(arvMaoLo)} – ${dollar(arvMaoHi)}`;
-          offerWhy.textContent = 'ARV MAO wins — retail comps drive the price; cash floor is not restrictive.';
+          offerWhy.textContent = 'ARV MAO is lower — retail comps drive the price.';
         }
       } else if (hasArv) {
         offerVal.textContent = `${dollar(arvMaoLo)} – ${dollar(arvMaoHi)}`;
-        offerWhy.textContent = 'Based on retail comps only — ARV formula applied.';
+        offerWhy.textContent = 'Based on ARV comps — no AS-IS comps entered.';
       } else {
         offerVal.textContent = dollar(marketFloor);
-        offerWhy.textContent = 'Based on cash/AS-IS comps only — avg $/sqft × subject sqft minus $15K assignment fee.';
+        offerWhy.textContent = 'Based on AS-IS comps only — Market Floor.';
+      }
+
+      // Comp mix summary
+      const totalWithData = arvPsfArr.length + asisPsfArr.length;
+      if (totalWithData > 0) {
+        const parts = [];
+        if (retailCount > 0) parts.push(`${retailCount} retail`);
+        if (cashCount > 0)   parts.push(`${cashCount} cash`);
+        document.getElementById('comp-mix').textContent =
+          parts.join(', ') + ' comp' + (totalWithData !== 1 ? 's' : '');
+      } else {
+        document.getElementById('comp-mix').textContent = '';
       }
     } else {
       offerEl.classList.add('hidden');
@@ -722,9 +689,7 @@
     document.getElementById('ft-arv').textContent = hasArv ? dollar(arv) : '$—';
     if (hasArv && hasFloor) {
       document.getElementById('ft-offer').textContent =
-        marketFloor <= arvMaoHi
-          ? dollar(marketFloor)
-          : `${dollar(arvMaoLo)}–${dollar(arvMaoHi)}`;
+        marketFloor <= arvMaoHi ? dollar(marketFloor) : `${dollar(arvMaoLo)}–${dollar(arvMaoHi)}`;
     } else if (hasArv) {
       document.getElementById('ft-offer').textContent = `${dollar(arvMaoLo)}–${dollar(arvMaoHi)}`;
     } else if (hasFloor) {
@@ -734,7 +699,6 @@
     }
   }
 
-  // Init
   renderAllComps();
   calc();
 </script>
