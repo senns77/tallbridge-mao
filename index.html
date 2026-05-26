@@ -293,6 +293,10 @@
           <span class="k">Bed/Bath Adj</span>
           <span class="v" id="bd-arv-adj">—</span>
         </div>
+        <div class="bd-row">
+          <span class="k">− Assignment Fee</span>
+          <span class="v" style="color:var(--hot)">−$15,000</span>
+        </div>
         <div class="bd-row result">
           <span class="k">ARV MAO</span>
           <span class="v" id="bd-arv-mao">—</span>
@@ -585,8 +589,8 @@
     let arvMaoLo = 0, arvMaoHi = 0;
     if (arv > 0) {
       const arvPct = arv * t.pct;
-      arvMaoLo = Math.max(0, arvPct - repHi + avgArvAdj);
-      arvMaoHi = Math.max(0, arvPct - repLo + avgArvAdj);
+      arvMaoLo = Math.max(0, arvPct - repHi + avgArvAdj - 15000);
+      arvMaoHi = Math.max(0, arvPct - repLo + avgArvAdj - 15000);
     }
 
     // Market Floor (no tier % applied — AS-IS value minus assignment fee plus bed/bath adj)
