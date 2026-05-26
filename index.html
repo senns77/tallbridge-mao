@@ -143,6 +143,11 @@
 
     .empty-state { text-align: center; padding: 16px 0; color: var(--mute); font-size: 12px; }
 
+    .bd-note {
+      font-size: 10px; color: var(--mute); line-height: 1.5; padding-top: 8px;
+      font-style: italic; letter-spacing: .02em;
+    }
+
     .your-offer-block {
       margin-top: 10px; padding: 16px 14px 14px; border-radius: 6px;
       background: rgba(0,201,125,.07); border: 1px solid var(--acc); text-align: center;
@@ -303,9 +308,9 @@
         </div>
       </div>
 
-      <!-- Market Floor section -->
+      <!-- AS-IS Market Data section -->
       <div id="floor-section" class="bd-section hidden">
-        <div class="bd-section-lbl">AS-IS Comps &rarr; Market Floor</div>
+        <div class="bd-section-lbl">AS-IS Market Data</div>
         <div class="bd-row">
           <span class="k">AS-IS Value</span>
           <span class="v" id="bd-asis">—</span>
@@ -319,17 +324,24 @@
           <span class="v" id="bd-floor-adj">—</span>
         </div>
         <div class="bd-row result-floor">
-          <span class="k">Market Floor</span>
+          <span class="k">AS-IS Ref</span>
           <span class="v" id="bd-floor">—</span>
         </div>
+        <div class="bd-note">AS-IS sales reflect individual seller situations and property condition — use as context, not a ceiling.</div>
+      </div>
+
+      <!-- Comp mix -->
+      <div id="comp-mix-row" class="hidden" style="margin-top:10px; padding-top:10px; border-top:1px solid var(--bdr); font-size:10px; color:var(--mute); letter-spacing:.05em;">
+        <span id="comp-mix"></span>
       </div>
     </div>
 
-    <div id="your-offer" class="your-offer-block hidden">
+    <div class="your-offer-block" style="margin-top:10px;">
       <div class="your-offer-lbl">YOUR OFFER</div>
-      <div id="offer-val" class="your-offer-val">—</div>
-      <div id="offer-why" class="your-offer-why">—</div>
-      <div id="comp-mix" class="comp-mix"></div>
+      <input type="number" id="manual-offer" placeholder="Enter offer amount"
+             inputmode="decimal" min="0" oninput="updateFooterOffer()"
+             style="background:transparent; border-color:var(--acc); font-size:24px;
+                    text-align:center; color:var(--acc); padding:12px; margin-top:6px;">
     </div>
   </div>
 
@@ -339,7 +351,7 @@
 <!-- Sticky footer -->
 <div class="footer">
   <div>
-    <div class="ft-lbl">ARV</div>
+    <div class="ft-lbl">ARV MAO</div>
     <div id="ft-arv">$—</div>
   </div>
   <div>
@@ -599,10 +611,9 @@
       marketFloor = Math.max(0, asisValue - 15000 + avgAsisAdj);
     }
 
-    const hasArv   = arv > 0;
-    const hasFloor = marketFloor > 0;
+    const hasArv = arv > 0;
 
-    document.getElementById('empty-state').classList.toggle('hidden', hasArv || hasFloor);
+    document.getElementById('empty-state').classList.toggle('hidden', hasArv || asisValue > 0);
 
     // Update breakdown labels
     document.getElementById('bd-pct-lbl').innerHTML =
@@ -651,56 +662,29 @@
       floorSection.classList.add('hidden');
     }
 
-    // Your Offer — lower of ARV MAO (hi) vs Market Floor
-    const offerEl  = document.getElementById('your-offer');
-    const offerVal = document.getElementById('offer-val');
-    const offerWhy = document.getElementById('offer-why');
-
-    if (hasArv || hasFloor) {
-      offerEl.classList.remove('hidden');
-      if (hasArv && hasFloor) {
-        if (marketFloor <= arvMaoHi) {
-          offerVal.textContent = dollar(marketFloor);
-          offerWhy.textContent = 'Market Floor is lower — AS-IS comps cap your offer.';
-        } else {
-          offerVal.textContent = `${dollar(arvMaoLo)} – ${dollar(arvMaoHi)}`;
-          offerWhy.textContent = 'ARV MAO is lower — retail comps drive the price.';
-        }
-      } else if (hasArv) {
-        offerVal.textContent = `${dollar(arvMaoLo)} – ${dollar(arvMaoHi)}`;
-        offerWhy.textContent = 'Based on ARV comps — no AS-IS comps entered.';
-      } else {
-        offerVal.textContent = dollar(marketFloor);
-        offerWhy.textContent = 'Based on AS-IS comps only — Market Floor.';
-      }
-
-      // Comp mix summary
-      const totalWithData = arvPsfArr.length + asisPsfArr.length;
-      if (totalWithData > 0) {
-        const parts = [];
-        if (retailCount > 0) parts.push(`${retailCount} retail`);
-        if (cashCount > 0)   parts.push(`${cashCount} cash`);
-        document.getElementById('comp-mix').textContent =
-          parts.join(', ') + ' comp' + (totalWithData !== 1 ? 's' : '');
-      } else {
-        document.getElementById('comp-mix').textContent = '';
-      }
+    // Comp mix summary
+    const totalWithData = arvPsfArr.length + asisPsfArr.length;
+    const compMixRow = document.getElementById('comp-mix-row');
+    if (totalWithData > 0) {
+      const parts = [];
+      if (retailCount > 0) parts.push(`${retailCount} retail`);
+      if (cashCount > 0)   parts.push(`${cashCount} cash`);
+      document.getElementById('comp-mix').textContent =
+        parts.join(', ') + ' comp' + (totalWithData !== 1 ? 's' : '');
+      compMixRow.classList.remove('hidden');
     } else {
-      offerEl.classList.add('hidden');
+      compMixRow.classList.add('hidden');
     }
 
-    // Footer
-    document.getElementById('ft-arv').textContent = hasArv ? dollar(arv) : '$—';
-    if (hasArv && hasFloor) {
-      document.getElementById('ft-offer').textContent =
-        marketFloor <= arvMaoHi ? dollar(marketFloor) : `${dollar(arvMaoLo)}–${dollar(arvMaoHi)}`;
-    } else if (hasArv) {
-      document.getElementById('ft-offer').textContent = `${dollar(arvMaoLo)}–${dollar(arvMaoHi)}`;
-    } else if (hasFloor) {
-      document.getElementById('ft-offer').textContent = dollar(marketFloor);
-    } else {
-      document.getElementById('ft-offer').textContent = '—';
-    }
+    // Footer — ARV MAO on left, manual offer on right
+    document.getElementById('ft-arv').textContent =
+      hasArv ? `${dollar(arvMaoLo)}–${dollar(arvMaoHi)}` : '$—';
+    updateFooterOffer();
+  }
+
+  function updateFooterOffer() {
+    const v = numVal('manual-offer');
+    document.getElementById('ft-offer').textContent = v ? dollar(v) : '—';
   }
 
   renderAllComps();
